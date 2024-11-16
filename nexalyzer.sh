@@ -1,4 +1,29 @@
-#!/bin/bash
+# !/bin/bash
+
+# ----------------------------------------------------------------------------
+# Copyright (c) 2024 Mohamed Haneef
+#
+# Licensed under the MIT License.
+# You may obtain a copy of the License at
+#
+#     https://opensource.org/licenses/MIT
+#
+# This software is provided "as is", without warranty of any kind, express or
+# implied, including but not limited to the warranties of merchantability, 
+# fitness for a particular purpose, and noninfringement. In no event shall the 
+# authors or copyright holders be liable for any claim, damages, or other 
+# liability, whether in an action of contract, tort, or otherwise, arising from, 
+# out of, or in connection with the software or the use or other dealings in the 
+# software.
+# ----------------------------------------------------------------------------
+# External tools:
+# ----------------------------------------------------------------------------
+# Subfinder
+# Httpx
+# Dig
+# Gobuster
+# ----------------------------------------------------------------------------
+
 
 # Color codes
 RED='\033[0;31m'
@@ -21,23 +46,15 @@ RESET='\033[0m'
 echo -e "${BRIGHT_PURPLE}"
 
 cat << "EOF"
-+=========================================================+
-|                __        __                      _      |
-|    _______  __/ /_  ____/ /___  ____ ___  ____ _(_)___  |
-|   / ___/ / / / __ \/ __  / __ \/ __ `__ \/ __ `/ / __ \ |
-|  (__  ) /_/ / /_/ / /_/ / /_/ / / / / / / /_/ / / / / / |
-| /____/\__,_/_.___/\__,_/\____/_/ /_/ /_/\__,_/_/_/ /_/  |
-|         __              __                              |
-|   _____/ /_  ___  _____/ /_____  _____                  |
-|  / ___/ __ \/ _ \/ ___/ //_/ _ \/ ___/                  |
-| / /__/ / / /  __/ /__/ ,< /  __/ /                      |
-| \___/_/ /_/\___/\___/_/|_|\___/_/                       |
-|                                                         |
-+=========================================================+
+   _  __ ____ _  __ ___    ____  __ ____   ____ ___ 
+  / |/ // __/| |/_// _ |  / /\ \/ //_  /  / __// _ \
+ /    // _/ _>  < / __ | / /__\  /  / /_ / _/ / , _/
+/_/|_//___//_/|_|/_/ |_|/____//_/  /___//___//_/|_| 
+                                                    
 EOF
 
 echo
-echo -e "${NC}[${RED}${BOLD}VERSION${NC}]: ${GREEN}v0.0.1${NC}"  
+echo -e "${NC}[${RED}${BOLD}VERSION${NC}]: ${GREEN}v0.0.2${NC}"  
 echo
 install_package_go() {
     INSTALL_DIR="/usr/local"
@@ -87,6 +104,11 @@ function install_package_dig(){
     echo -e "${GREEN}Successfully installed dig...${NC}" 
 }
 
+function install_package_gobuster(){   
+    echo -e "${CYAN}Installing gobuster...${NC}"
+    sudo apt install gobuster > /dev/null 2>&1
+    echo -e "${GREEN}Successfully installed gobuster...${NC}" 
+}
 
 # Usage 
 if [ -z "$1" ]; then
@@ -117,6 +139,13 @@ if command -v dig >/dev/null 2>&1; then
 else
     echo -e "${BOLD}REQUIRED PACKAGE: ${RED}dig is not installed.${NC}"
     missing_packages+=("dig")
+fi
+
+if command -v gobuster >/dev/null 2>&1; then
+    echo -e "${BOLD}REQUIRED PACKAGE: ${GREEN}gobuster is installed ...${NC}"
+else
+    echo -e "${BOLD}REQUIRED PACKAGE: ${RED}gobuster is not installed.${NC}"
+    missing_packages+=("gobuster")
 fi
 
 if [ "${#missing_packages[@]}" -eq 0 ]; then
@@ -198,7 +227,7 @@ fi
 # Check for all the available domains
 echo -e "${BOLD}${BLUE}Checking for the available subdomains for: ${NC}${YELLOW}$1${NC}"
 echo -e "${BOLD}${YELLOW}Please wait this may take a while..${NC}"
-subfinder -d "$1" -silent > "$availabledomains"
+# subfinder -d "$1" -silent > "$availabledomains"
 
 # If the file 'availabledomains' is not empty then check for active domains
 if [ -s "$availabledomains" ]; then
@@ -215,13 +244,11 @@ if [ -s "$availabledomains" ]; then
     echo
     echo -e "${BOLD}${GREEN}Checking for the active subdomains...${NC}"
     echo -e "${BOLD}${YELLOW}Please wait this may take a while..${NC}"
-    httpx -l "$availabledomains" -o "$activedomains" -silent > /dev/null
+    # httpx -l "$availabledomains" -o "$activedomains" -silent > /dev/null
 
     # If the file 'activedomains.txt' is not empty then check for active domains
     if [ -s "$activedomains" ]; then
         echo -e "${GREEN}Here's a list of active subdomains${NC}"
-
-        # Printing the active domains
         echo
         echo -e "${BOLD}${CYAN}Active subdomains:${NC}"
         echo
@@ -256,77 +283,74 @@ do
     echo -e "${BOLD}${ORANGE}DNS records for subdomain: ${NC}${GREEN}$domain${NC}"
     echo    
     
-    echo -ne "${BRIGHT_PURPLE}A record: ${NC}"
-    if [ -n "$a_record" ]; then
-        echo "$a_record"
-        echo
-    else
-        echo "No A record found"
-        echo
-    fi
+    declare -A dns_records=(
+        ["A record"]="$a_record"
+        ["AAAA record"]="$aaaa_record"
+        ["CNAME record"]="$cname_record"
+        ["CAA record"]="$caa_record"
+        ["HINFO record"]="$hinfo_record"
+        ["TXT record"]="$txt_record"
+        ["MX record"]="$mx_record"
+        ["SOA record"]="$soa_record"
+    )
 
-    echo -ne "${BRIGHT_PURPLE}AAAA record: ${NC}"
-    if [ -n "$aaaa_record" ]; then
-        echo "$aaaa_record"
-        echo
-    else
-        echo "No AAAA record found"
-        echo
-    fi
-
-    echo -ne "${BRIGHT_PURPLE}CNAME record: ${NC}"
-    if [ -n "$cname_record" ]; then
-        echo "$cname_record"
-        echo
-    else
-        echo "No CNAME record found"
-        echo
-    fi
-
-    echo -ne "${BRIGHT_PURPLE}CAA record: ${NC}"
-    if [ -n "$caa_record" ]; then
-        echo "$caa_record"
-        echo
-    else
-        echo "No CAA record found"
-        echo
-    fi
-
-    echo -ne "${BRIGHT_PURPLE}HINFO record: ${NC}"
-    if [ -n "$hinfo_record" ]; then
-        echo "$hinfo_record"
-        echo
-    else
-        echo "No HINFO record found"
-        echo
-    fi
-
-    echo -ne "${BRIGHT_PURPLE}TXT record: ${NC}"
-    if [ -n "$txt_record" ]; then
-        echo "$txt_record"
-        echo
-    else
-        echo "No TXT record found"
-        echo
-    fi
-
-    echo -ne "${BRIGHT_PURPLE}MX record: ${NC}"
-    if [ -n "$mx_record" ]; then
-        echo "$mx_record"
-        echo
-    else
-        echo "No MX record found"
-        echo
-    fi
-
-    echo -ne "${BRIGHT_PURPLE}SOA record: ${NC}"
-    if [ -n "$soa_record" ]; then
-        echo "$soa_record"
-        echo
-    else
-        echo "No SOA record found"
-        echo
-    fi
-
+    for record_name in "${!dns_records[@]}"; do
+        record_value="${dns_records[$record_name]}"
+        if [ -n "$record_value" ]; then
+            echo -e "${BRIGHT_PURPLE}$record_name: ${NC}$record_value"
+        fi
+    done
 done < "$activedomains"
 
+while true; do
+    echo
+    echo -ne "${BRIGHT_PURPLE}Do you want to continue with Directory Bruteforcing ${YELLOW}[Y/N]:${YELLOW}"
+    read -n 1 bruteforce_permission
+    echo
+
+    bruteforce_permission=$(echo "$bruteforce_permission" | tr '[:upper:]' '[:lower:]')
+
+    if [[ "$bruteforce_permission" == "y" ]]; then
+        echo -e "${GREEN}Starting Directory Brute-Forcing${NC}..."
+
+        domains=()
+        domains+=("$1")
+
+        if [[ -f "$activedomains" ]]; then
+            while IFS= read -r domain; do
+                domains+=("$domain")
+            done < "$activedomains"
+        else
+            echo -e "${RED}Error: File '$activedomains' does not exist!${NC}"
+            exit 1
+        fi
+
+        i=1
+        for domain in "${domains[@]}"; do
+            echo -e "${MAGENTA}$i. $domain${NC}"
+            i=$((i+1))
+        done
+        echo
+        echo -e "${BOLD}${BLUE}Which of these do you want to Directory Bruteforce?"
+        echo -ne "${YELLOW}Select from 1-$((i-1)):${NC}"  
+        read -n 1 bruteforce_choice
+        echo
+
+        if [[ "$bruteforce_choice" -ge 1 && "$bruteforce_choice" -le $((i-1)) ]]; then
+            selected_domain="${domains[$((bruteforce_choice-1))]}"
+            echo -e "${CYAN}${BOLD}Directory Bruteforcing selected domain: ${GREEN}$selected_domain${NC}${RESET}"
+            gobuster dir -u "$selected_domain" -w ./wordlist/wordlist.txt -t 200 -q  
+        else
+            echo -e "${RED}Invalid selection! Exiting.${NC}"
+            exit 1
+        fi
+        exit 0;
+
+    elif [[ "$bruteforce_permission" == "n" ]]; then
+        echo -e "${RED}Exiting the process.${NC}"
+        exit 0  
+
+    else
+        echo -e "${ORANGE}Invalid option, please enter 'Y' or 'N'.${NC}"
+    fi
+done
