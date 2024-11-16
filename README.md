@@ -1,22 +1,15 @@
 ```
-+=========================================================+
-|                __        __                      _      |
-|    _______  __/ /_  ____/ /___  ____ ___  ____ _(_)___  |
-|   / ___/ / / / __ \/ __  / __ \/ __ `__ \/ __ `/ / __ \ |
-|  (__  ) /_/ / /_/ / /_/ / /_/ / / / / / / /_/ / / / / / |
-| /____/\__,_/_.___/\__,_/\____/_/ /_/ /_/\__,_/_/_/ /_/  |
-|         __              __                              |
-|   _____/ /_  ___  _____/ /_____  _____                  |
-|  / ___/ __ \/ _ \/ ___/ //_/ _ \/ ___/                  |
-| / /__/ / / /  __/ /__/ ,< /  __/ /                      |
-| \___/_/ /_/\___/\___/_/|_|\___/_/                       |
-|                                                         |
-+=========================================================+
+   _  __ ____ _  __ ___    ____  __ ____   ____ ___ 
+  / |/ // __/| |/_// _ |  / /\ \/ //_  /  / __// _ \
+ /    // _/ _>  < / __ | / /__\  /  / /_ / _/ / , _/
+/_/|_//___//_/|_|/_/ |_|/____//_/  /___//___//_/|_| 
+                                                    
 ```
 
-# Subdomain Checker v0.0.1
+# Nexalyzer v0.0.2
 
     This tool helps to gather the subdomains and the DNS records of all the active subdomains under the given domain
+    Added directory bruteforcing option for active domains
 
 ## Requirements:
 
@@ -26,12 +19,18 @@
     - subfinder
     - httpx
     - dig 
+    - gobuster
 
 ## USAGE:
     ``` ./subdomain_checker.sh [domain_name] ``` 
 
-## Checks for:
+## Features:
     
+    Subdomain Enumeration:
+    - Checks for all the subdomains
+    - Seperates up the active subdomain from the available subdomains
+
+    Domain Records for active domains:
     - A record
     - AAAA record
     - CNAME record
@@ -40,6 +39,9 @@
     - TXT record
     - MX record
     - SOA record
+
+    Additional Feature:
+    - Directory bruteforcing for active domains
 
 ## Built By:
     Mohamed Haneef R    
