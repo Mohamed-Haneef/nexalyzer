@@ -22,7 +22,7 @@
     - gobuster
 
 ## USAGE:
-    ``` ./subdomain_checker.sh [domain_name] ``` 
+    ``` ./nexalyzer.sh [domain_name] ``` 
 
 ## Features:
     

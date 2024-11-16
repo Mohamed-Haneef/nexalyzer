@@ -112,7 +112,7 @@ function install_package_gobuster(){
 
 # Usage 
 if [ -z "$1" ]; then
-    echo -e "${YELLOW}Usage${NC}: $0 [domain_name]"
+    echo -e "${YELLOW}Usage${NC}: ./nexalyer.sh [domain_name]"
     exit 1
 fi
 
