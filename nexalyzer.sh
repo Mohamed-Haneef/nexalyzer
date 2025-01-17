@@ -314,7 +314,6 @@ while true; do
         echo -e "${GREEN}Starting Directory Brute-Forcing${NC}..."
 
         domains=()
-        domains+=("$1")
 
         if [[ -f "$activedomains" ]]; then
             while IFS= read -r domain; do
